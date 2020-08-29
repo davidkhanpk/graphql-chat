@@ -1,14 +1,66 @@
 const { User } = require('../models');
 const bcrypt = require('bcryptjs')
-const { UserInputError } = require("apollo-server")
+const { UserInputError, AuthenticationError } = require("apollo-server")
+const jwt = require('jsonwebtoken')
+const { JWT_SECRET } = require('../config/env.json')
+const { Op } = require('sequelize')
 module.exports = {
     Query: {
-        getUsers: async () => {
+        getUsers: async (_, __, context) => {
+            if(context.req && context.req.headers.authorization) {
+                const token = context.req.headers.authorization.split('Bearer ')[1]
+                jwt.verify(token, JWT_SECRET, (err, decodedToken) => {
+                    if(err) {
+                        throw new AuthenticationError('Bad User')
+                    }
+                    user = decodedToken
+                })
+            }
             try {
-                const users = await User.findAll();
+                const users = await User.findAll({
+                    where: {username: { [Op.ne]: user.username}}
+                });
                 return users;
             } catch(e) {
 
+            }
+        },
+        login: async (_, args) => {
+            const { username, password } = args
+            let errors = {}
+            try {
+                if(username.trim() == '') {
+                    errors.username = "username must not be empty"
+                }
+                if(password == '') {
+                    errors.password = "password must not be empty"
+                }
+                if(Object.keys(errors).length) {
+                    throw new UserInputError("Bad Input", {errors})
+                }
+                const user = await User.findOne({
+                    where: {username}
+                })
+                if(!user) {
+                    errors.username = "Username not found"
+                    throw new UserInputError('Bad Input', { errors})
+                }
+                const correctPassword = await bcrypt.compare(password, user.password)
+                if(!correctPassword) {
+                    errors.password = "Password is incorrent"
+                    throw new AuthenticationError("Authentication Error", {errors})
+                }
+                const token = jwt.sign({
+                    username
+                }, JWT_SECRET, { expiresIn: 60 * 60})
+                
+                return {
+                    ...user.toJSON(),
+                    createdAt: user.createdAt.toISOString(),
+                    token
+                }
+            } catch(err) {
+                throw err
             }
         }
     },
