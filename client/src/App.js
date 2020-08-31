@@ -5,20 +5,24 @@ import { Container } from 'react-bootstrap';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Home from './pages/Home';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Switch } from 'react-router-dom';
+import { AuthProvider } from './context/auth';
+import DynamicRoute from './utils/DynamicRoute';
 
 function App() {
   return (
     <ApolloProvider>
-      <BrowserRouter>
-      <Container className="pt-5">
-        <Switch>
-          <Route path="/" exact component={Home} />
-          <Route path="/login" exact component={Login} />
-          <Route path="/register" exact component={Register} />
-        </Switch>
-      </Container>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+        <Container className="pt-5">
+          <Switch>
+            <DynamicRoute path="/" exact component={Home} authenticated/>
+            <DynamicRoute path="/login" exact component={Login} guest/>
+            <DynamicRoute path="/register" exact component={Register} guest />
+          </Switch>
+        </Container>
+        </BrowserRouter>
+      </AuthProvider>
     </ApolloProvider>
   );
 }
