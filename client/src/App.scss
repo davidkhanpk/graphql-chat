@@ -33,6 +33,27 @@ body {
   height: 59px;
 }
 
-// .main-nav-bar {
-//   height: 100%;
-// }
+.login-form {
+  margin-top: 35px;
+}
+
+.login-form input {
+  font-size: 18px;
+  padding: 0 20px;
+  border-radius: 20px;
+  height: 50px;
+}
+
+.login-button button {
+  border-radius: 30px;
+  width: 203px;
+  margin-bottom: 10px;
+}
+
+.login-button small {
+  font-size: 14px;
+}
+
+.login-form label {
+  font-size: 18px;
+}
