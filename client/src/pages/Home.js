@@ -2,6 +2,7 @@ import React, { useEffect, useState, Fragment } from 'react'
 import { Row, Col, Button, Image } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { gql, useQuery, useLazyQuery } from '@apollo/client'
+import Tabs from '../utils/Tabs';
 
 import { useAuthDispatch } from '../context/auth'
 
@@ -91,31 +92,7 @@ export default function Home({ history }) {
   }
   return (
     <Fragment>
-      <Row className="bg-white justify-content-around mb-1">
-        <Link to="/login">
-          <Button variant="link">Login</Button>
-        </Link>
-        <Link to="/register">
-          <Button variant="link">Register</Button>
-        </Link>
-        <Button variant="link" onClick={logout}>
-          Logout
-        </Button>
-      </Row>
-      <Row className="bg-white">
-        <Col xs={4} className="p-0 bg-secondary">
-          {usersMarkup}
-        </Col>
-        <Col xs={8}>
-          {messagesData && messagesData.getMessages.length > 0 ? (
-            messagesData.getMessages.map((message) => (
-              <p key={message.uuid}>{message.content}</p>
-            ))
-          ) : (
-            <p>Messages</p>
-          )}
-        </Col>
-      </Row>
+      <Tabs />
     </Fragment>
   )
 }

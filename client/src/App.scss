@@ -15,3 +15,24 @@ body {
     rgba(252, 176, 69, 0.9) 100%
   );
 }
+
+.tabs-col {
+  padding: 0;
+  position: absolute;
+  bottom: 0;
+  background: white;
+  height: 60px;
+}
+
+.tab-nav-item {
+  text-align: center;
+  width: 50%;
+}
+
+.nav-item-link {
+  height: 59px;
+}
+
+// .main-nav-bar {
+//   height: 100%;
+// }
