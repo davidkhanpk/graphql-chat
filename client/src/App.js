@@ -4,15 +4,17 @@ import ApolloProvider from './apolloProvider';
 import { Container } from 'react-bootstrap';
 import Register from './pages/Register';
 import Login from './pages/Login';
-import Home from './pages/Home';
+import Home from './pages/home/Home';
 import { BrowserRouter, Switch } from 'react-router-dom';
 import { AuthProvider } from './context/auth';
+import { MessageProvider } from './context/message';
 import DynamicRoute from './utils/DynamicRoute';
 
 function App() {
   return (
     <ApolloProvider>
       <AuthProvider>
+        <MessageProvider>
         <BrowserRouter>
         <Container className="pt-5">
           <Switch>
@@ -22,6 +24,7 @@ function App() {
           </Switch>
         </Container>
         </BrowserRouter>
+        </MessageProvider>
       </AuthProvider>
     </ApolloProvider>
   );
