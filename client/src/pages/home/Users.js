@@ -10,6 +10,7 @@ const GET_USERS = gql`
       username
       createdAt
       imageUrl
+      language
       latestMessage {
         uuid
         from
@@ -24,6 +25,7 @@ const GET_USERS = gql`
 export default function Users() {
     const disptach = useMessageDispatch();
     const { users } = useMessageState()
+    console.log(users);
     const selectedUser = users?.find(u => u.selected === true)?.username
     const { loading } = useQuery(GET_USERS, {
         onCompleted: data => disptach({ type: 'SET_USERS', payload: data.getUsers }),

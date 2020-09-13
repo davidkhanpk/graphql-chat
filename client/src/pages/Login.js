@@ -9,6 +9,7 @@ const LOGIN_USER = gql`
     login(username: $username, password: $password) {
       username
       email
+      language
       createdAt
       token
     }
