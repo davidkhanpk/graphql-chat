@@ -45,7 +45,7 @@ export default function Users() {
                     onClick={() => disptach({type: 'SET_SELECTED_USER', payload: user.username})}
                 >
                     <Image
-                    src={user.imageUrl}
+                    src={user.imageUrl || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'}
                     roundedCircle
                     className="mr-2"
                     style={{ width: 50, height: 50, objectFit: 'cover' }}

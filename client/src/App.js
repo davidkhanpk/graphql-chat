@@ -5,6 +5,7 @@ import { Container } from 'react-bootstrap';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Home from './pages/home/Home';
+import VideoChat from './pages/home/VideoChat';
 import { BrowserRouter, Switch } from 'react-router-dom';
 import { AuthProvider } from './context/auth';
 import { MessageProvider } from './context/message';
@@ -16,11 +17,12 @@ function App() {
       <AuthProvider>
         <MessageProvider>
         <BrowserRouter>
-        <Container className="pt-5">
+        <Container className="">
           <Switch>
             <DynamicRoute path="/" exact component={Home} authenticated/>
             <DynamicRoute path="/login" exact component={Login} guest/>
             <DynamicRoute path="/register" exact component={Register} guest />
+            <DynamicRoute path="/video-chat" exact component={VideoChat} guest />
           </Switch>
         </Container>
         </BrowserRouter>

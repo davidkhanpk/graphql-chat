@@ -1,5 +1,5 @@
-const { User, Message } = require('../../models');
-const { UserInputError, AuthenticationError } = require("apollo-server")
+const { User, Message, Reaction } = require('../../models');
+const { UserInputError, AuthenticationError, withFilter, ForbiddenError } = require("apollo-server")
 const { Op } = require('sequelize')
 
 module.exports = {
@@ -26,7 +26,7 @@ module.exports = {
         }
     },
     Mutation: {
-        sendMessage: async (parent, {to, content}, { user }) => {
+        sendMessage: async (parent, {to, content}, { user, pubsub }) => {
             try {
                 if(!user) throw new AuthenticationError('Unauthenticated');
                 const recipient = await User.findOne({where: {username: to }})
@@ -43,10 +43,79 @@ module.exports = {
                     to,
                     content
                 })
+
+                pubsub.publish("NEW_MESSAGE", {newMessage: message})
                 return message
             } catch(err) {
                 throw err
             }
+        },
+        reactToMessage: async (_, { uuid, content }, {user, pubsub }) => {
+            const reactions = ['❤️', '😆', '😯', '😢', '😡', '👍', '👎']
+            try {
+                if(!reactions.includes(content)) {
+                throw new UserInputError("Invalid Reaction")
+                }
+                const username = user ? user.username : '';
+                user = await User.findOne({ where: {username}})
+                if(!user) {
+                    throw new AuthenticationError('Unauthenticated')
+                }
+                const message = await Message.findOne({ where: {uuid}})
+                if(!message) throw new UserInputError('Message not Found');
+                if(message.from !== user.username && message.to !== user.username) {
+                    throw new ForbiddenError("Unauthorized")
+                }
+                const reaction = await Reaction.findOne({
+                    where: {messageId: message.id, userId: user.id}
+                })
+
+                if(reaction) {
+                    reaction.content = content
+                    await reaction.save()
+                } else {
+                    reaction = await Reaction.create({
+                        messageId: message.id,
+                        userId: user.id,
+                        content
+                    })
+                    pubsub.publish('NEW_REACTION', { newReaction: reaction})
+                    return reaction
+                }
+            } catch(err) {
+                throw err
+            }
+        }
+    },
+    Subscription: {
+        newMessage: {
+            subscribe: withFilter((_, __, {user, pubsub}) => {
+                if(!user) throw new AuthenticationError('Unauthenticated')
+                return pubsub.asyncIterator(['NEW_MESSAGE'])
+            }, ({ newMessage}, _, { user }) => {
+                // console.log(newMessage);
+                // console.log(user);
+                if(newMessage.from === user.username || newMessage.to === user.username) {
+                    console.log("returning true");
+                    return true
+                }
+                return false
+            })
+        },
+        newReaction: {
+            subscribe: withFilter((_, __, {user, pubsub}) => {
+                if(!user) throw new AuthenticationError('Unauthenticated')
+                return pubsub.asyncIterator('NEW_REACTION')
+            }, async ({ newReaction }, _, { user }) => {
+                // console.log(newMessage);
+                // console.log(user);
+                const message = await newReaction.getMessages()
+                if(message.from === user.username || message.to === user.username) {
+                    console.log("returning true");
+                    return true
+                }
+                return false
+            })
         }
     }
 }

@@ -7,7 +7,7 @@ let user = null;
 const token = localStorage.getItem("token");
 if(token) {
     const decodedToken = jwtDecode(token);
-    let expiresAt = new Date(decodedToken.exp);
+    const expiresAt = new Date(decodedToken.exp * 1000)
     if(new Date() > expiresAt) {
         localStorage.removeItem("token")
     } else {
@@ -18,7 +18,8 @@ if(token) {
 }
 
 const messageReducer = (state, action) => {
-    let usersCopy = []
+    let usersCopy = [], userIndex = null;
+    const { username, message, messages } = action.payload
     switch (action.type) {
         case 'SET_USERS': 
             return {
@@ -26,9 +27,8 @@ const messageReducer = (state, action) => {
                 users: action.payload
             }
         case 'SET_USER_MESSAGES': 
-            const { username, messages} = action.payload
             usersCopy = [...state.users]
-            const userIndex = usersCopy.findIndex(u => u.username == username)
+            userIndex = usersCopy.findIndex(u => u.username == username)
             usersCopy[userIndex] = { ...usersCopy[userIndex], messages}
             return {
                 ...state,
@@ -44,6 +44,19 @@ const messageReducer = (state, action) => {
                 ...state,
                 users: usersCopy
             }
+            case 'ADD_MESSAGE': 
+                usersCopy = [...state.users]
+                userIndex = usersCopy.findIndex((u) => u.username === username)
+                let newUser = {
+                    ...usersCopy[userIndex],
+                    messages: usersCopy[userIndex].messages ? [message, ...usersCopy[userIndex].messages] : null ,
+                    latestMessage: message
+                }
+                usersCopy[userIndex] = newUser
+                return {
+                    ...state,
+                    users: usersCopy,
+                }
         default: 
             throw new Error(`Unknown action type: ${action.type}`)
     }

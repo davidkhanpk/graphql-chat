@@ -5,8 +5,6 @@ import { useAuthState } from '../context/auth';
 
 export default function DynamicRoute(props) {
     const { user } = useAuthState()
-    console.log(props);
-    console.log(user);
     if(props.authenticated && !user) {
         return <Redirect to="/login" />
     } else if(props.guest && user) {
