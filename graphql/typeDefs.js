@@ -16,18 +16,23 @@ module.exports = gql`
         from: String!
         to: String!
         createdAt: String!
+        reactions: [Reaction]
     }
     type Reaction {
         uuid: String!
         content: String!
         createdAt: String!
-        Message: Message!
-        User: User
+        message: Message!
+        user: User
+    }
+    type Translation {
+        string: String!
     }
     type Query {
         getUsers: [User]!
         login(username: String! password: String!): User!
         getMessages(from: String!): [Message]!
+        getTranslation(string: String! to: String from: String): Translation!
     }
     type Mutation {
         register(username: String! email: String! language: String! password: String! confirmPassword: String!): User!

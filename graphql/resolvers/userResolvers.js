@@ -2,7 +2,6 @@ const { User, Message } = require('../../models');
 const bcrypt = require('bcryptjs')
 const { UserInputError, AuthenticationError } = require("apollo-server")
 const jwt = require('jsonwebtoken')
-const { JWT_SECRET } = require('../../config/env.json')
 const { Op } = require('sequelize')
 module.exports = {
     Query: {
@@ -58,7 +57,7 @@ module.exports = {
                 }
                 const token = jwt.sign({
                     username
-                }, JWT_SECRET, { expiresIn: 60 * 60})
+                }, process.env.JWT_SECRET, { expiresIn: 60 * 60})
                 
                 return {
                     ...user.toJSON(),

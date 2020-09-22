@@ -19,7 +19,7 @@ if(token) {
 
 const messageReducer = (state, action) => {
     let usersCopy = [], userIndex = null;
-    const { username, message, messages } = action.payload
+    const { username, message, messages, reaction } = action.payload
     switch (action.type) {
         case 'SET_USERS': 
             return {
@@ -47,6 +47,7 @@ const messageReducer = (state, action) => {
             case 'ADD_MESSAGE': 
                 usersCopy = [...state.users]
                 userIndex = usersCopy.findIndex((u) => u.username === username)
+                message.reactions = []
                 let newUser = {
                     ...usersCopy[userIndex],
                     messages: usersCopy[userIndex].messages ? [message, ...usersCopy[userIndex].messages] : null ,
@@ -57,6 +58,36 @@ const messageReducer = (state, action) => {
                     ...state,
                     users: usersCopy,
                 }
+        case 'ADD_REACTION':
+            usersCopy = [...state.users]
+            userIndex = usersCopy.findIndex((u) => u.username === username)
+            let userCopy = {...usersCopy[userIndex]}
+            const messageIndex = userCopy.messages?.findIndex(m => m.uuid === reaction.message.uuid)
+            if(messageIndex > -1) {
+                let messagesCopy = [...userCopy.message]
+                let reactionsCopy = [...messagesCopy[messageIndex].reactions]
+                const reactionIndex = reactionsCopy.findIndex(r => r.uuid === reaction.uuid);
+                if(reactionIndex > -1) {
+                    reactionsCopy[reactionIndex] = reaction
+                } else {
+                    reactionsCopy = [...reactionsCopy, reaction]
+                }
+                messagesCopy[messageIndex] = {
+                    ...messagesCopy[messageIndex],
+                    reactions: reactionsCopy
+                }
+
+                userCopy = {
+                    ...userCopy, 
+                    messages: messagesCopy
+                }
+                userCopy[userIndex] = userCopy
+                return {
+                    ...state,
+                    users: usersCopy
+                }
+
+            }
         default: 
             throw new Error(`Unknown action type: ${action.type}`)
     }

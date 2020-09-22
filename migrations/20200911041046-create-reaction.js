@@ -32,6 +32,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
+    }, {
+      engine: "InnoDB",
+      charset: "utf8mb4",
+      collate: "utf8mb4_unicode_520_ci",
     });
   },
   down: async (queryInterface, Sequelize) => {

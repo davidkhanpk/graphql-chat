@@ -16,7 +16,8 @@ class Party extends Component {
       video: true,
       extraClass: '',
       extraLocalClass: '',
-      showText: true
+      showText: true,
+      incomingSpeech: []
     };
     this.remoteVideos = {};
   }
@@ -31,7 +32,7 @@ class Party extends Component {
       autoRequestMedia: true,
       // Optional: nickname
       nick: this.state.nick,
-      debug: true
+      debug: false
     });
 
     this.webrtc.on('peerStreamAdded', this.addVideo);
@@ -40,7 +41,8 @@ class Party extends Component {
     this.webrtc.on('iceFailed', this.handleConnectionError);
     this.webrtc.on('connectivityError', this.handleConnectionError);
     this.webrtc.on('mute', this.handleRemoteMute);
-    this.webrtc.on('unmute', this.handleRemoteUnMute);
+    this.webrtc.on('unmute', this.handleRemoteUnMute); 
+    this.webrtc.on('receivedPeerData', this.handlePeerData);
   }
 
   addVideo = (stream, peer) => {
@@ -94,7 +96,7 @@ class Party extends Component {
 
   // Show fellow peers in the room
   generateRemotes = () => this.state.peers.map((p) => (
-      <div className={`other-video-container ${this.state.extraClass}`} id={/* The video container needs a special id */ `${this.webrtc.getContainerId(p)}`}>
+      <div key={p.id} className={`other-video-container ${this.state.extraClass}`} id={/* The video container needs a special id */ `${this.webrtc.getContainerId(p)}`}>
         <video
           // Important: The video element needs both an id and ref
           id={this.webrtc.getDomId(p)}
@@ -102,10 +104,19 @@ class Party extends Component {
           />
       </div>
         
-    ));
+  ));
 
   disconnect = () => {
     this.webrtc.quit();
+  }
+  handlePeerData = (type, payload) => {
+    if(type == "speech") {
+      if(this.state.incomingSpeech.length > 3) {
+          this.setState({ incomingSpeech: [] }, () => {
+            this.setState({ incomingSpeech: [...this.state.incomingSpeech, payload] })
+          })
+      }
+    }
   }
 
   componentWillUnmount() {
@@ -144,7 +155,7 @@ class Party extends Component {
   }
 
   render() {
-    let { audio, video, extraLocalClass, showText } = this.state
+    let { audio, video, extraLocalClass, showText, peers } = this.state
     return (
       <div className="main-container">
         <p style={{display: `${showText ? "block" : "none"}`}} className="no-parti-text">No Participants</p>
@@ -172,7 +183,7 @@ class Party extends Component {
               <i className="fas fa-phone-alt"></i>
             </div>
         </div>
-        <Speech audio={audio}></Speech>
+        <Speech peers={peers} webrtc={this.webrtc} audio={audio}></Speech>
       </div>
     );
   }

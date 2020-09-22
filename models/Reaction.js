@@ -11,8 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate({ User, Message}) {
       // define association here
-      this.belongsTo(Message)
-      this.belongsTo(User)
+      this.belongsTo(Message, {foreignKey: 'messageId'})
+      this.belongsTo(User, {foreignKey: 'userId'})
 
     }
   };
@@ -36,7 +36,10 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Reaction',
-    tableName: "reactions"
+    tableName: "reactions",
+    charset: "utf8mb4",
+    collate: "utf8mb4_unicode_520_ci",
+    engine: "InnoDB"
   });
   return Reaction;
 };

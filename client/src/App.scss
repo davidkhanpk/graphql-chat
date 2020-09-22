@@ -134,3 +134,28 @@ body {
   color: white;
   font-size: 20px;
 }
+
+.react-button-popover {
+  height: 30px;
+}
+
+.react-icon-btn {
+  padding: 0 0.25rem;
+  font-size: 1rem;
+  transition: 0.25s;
+  &:hover {
+    text-decoration: none;
+    font-size: 1.5rem;
+  }
+}
+
+.btn:focus {
+  box-shadow: none;
+}
+
+.reactions-div {
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+  font-size: 0.7rem;
+}

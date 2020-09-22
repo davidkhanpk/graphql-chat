@@ -1,6 +1,7 @@
 const { User, Message, Reaction } = require('../../models');
 const { UserInputError, AuthenticationError, withFilter, ForbiddenError } = require("apollo-server")
 const { Op } = require('sequelize')
+const translate = require('@vitalets/google-translate-api');
 
 module.exports = {
     Query: {
@@ -17,9 +18,22 @@ module.exports = {
                         from: { [Op.in]: usernames},
                         to: { [Op.in]: usernames}
                     },
-                    order: [['createdAt', "DESC"]]
+                    order: [['createdAt', "DESC"]],
+                    include: [{model: Reaction, as: 'reactions'}]
                 })
                 return messages
+            } catch(err) {
+                throw err
+            }
+        },
+        getTranslation(parent, {string, to, from}, {user}) {
+            try {
+                if(!user) throw new AuthenticationError('Unauthenticated');
+                translate(string, {to: 'en'}).then(res => {
+                    return res.text;
+                }).catch(err => {
+                    throw new UserInputError('Language Failed')
+                });
             } catch(err) {
                 throw err
             }
@@ -50,13 +64,13 @@ module.exports = {
                 throw err
             }
         },
-        reactToMessage: async (_, { uuid, content }, {user, pubsub }) => {
+        reactToMessage: async (_, { uuid, content }, { user, pubsub }) => {
             const reactions = ['❤️', '😆', '😯', '😢', '😡', '👍', '👎']
             try {
                 if(!reactions.includes(content)) {
                 throw new UserInputError("Invalid Reaction")
                 }
-                const username = user ? user.username : '';
+                let username = user ? user.username : '';
                 user = await User.findOne({ where: {username}})
                 if(!user) {
                     throw new AuthenticationError('Unauthenticated')
@@ -66,6 +80,7 @@ module.exports = {
                 if(message.from !== user.username && message.to !== user.username) {
                     throw new ForbiddenError("Unauthorized")
                 }
+
                 const reaction = await Reaction.findOne({
                     where: {messageId: message.id, userId: user.id}
                 })
@@ -74,15 +89,18 @@ module.exports = {
                     reaction.content = content
                     await reaction.save()
                 } else {
+                    console.log("saving reaction")
                     reaction = await Reaction.create({
                         messageId: message.id,
                         userId: user.id,
                         content
                     })
-                    pubsub.publish('NEW_REACTION', { newReaction: reaction})
-                    return reaction
+                    console.log(reaction)
+                    // pubsub.publish('NEW_REACTION', { newReaction: reaction})
                 }
+                return reaction
             } catch(err) {
+                console.log(err)
                 throw err
             }
         }
@@ -109,7 +127,7 @@ module.exports = {
             }, async ({ newReaction }, _, { user }) => {
                 // console.log(newMessage);
                 // console.log(user);
-                const message = await newReaction.getMessages()
+                const message = await newReaction.getMessage()
                 if(message.from === user.username || message.to === user.username) {
                     console.log("returning true");
                     return true
