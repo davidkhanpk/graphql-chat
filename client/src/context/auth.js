@@ -7,8 +7,9 @@ let user = null;
 const token = localStorage.getItem("token");
 if(token) {
     const decodedToken = jwtDecode(token);
-    let expiresAt = new Date(decodedToken.exp);
+    const expiresAt = new Date(decodedToken.exp * 1000)
     if(new Date() > expiresAt) {
+        console.log("expiring token")
         localStorage.removeItem("token")
     } else {
         user = decodedToken
@@ -20,6 +21,7 @@ if(token) {
 const authReducer = (state, action) => {
     switch (action.type) {
         case 'LOGIN':
+            console.log("setting token")
             localStorage.setItem('token', action.payload.token)
             return {
                 ...state,
@@ -37,6 +39,7 @@ const authReducer = (state, action) => {
 }
 
 export const AuthProvider = ({ children}) => {
+    // console.log(user);
     const [state, dispatch] = useReducer(authReducer, {user})
     return  (
         <AuthDispatchContext.Provider value={dispatch}>

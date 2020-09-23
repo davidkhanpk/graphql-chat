@@ -1,32 +1,29 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('users', {
+    await queryInterface.createTable('reactions', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      username: {
-        type: Sequelize.STRING(20),
-        allowNull: false,
-        unique: true 
-      },
-      email: {
-        type: Sequelize.STRING(100),
-        allowNull: false,
-        unique: true 
-      },
-      language: {
+      content: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      password: {
-        type: Sequelize.STRING,
+      uuid: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4
+      },
+      messageId: {
+        type: Sequelize.INTEGER,
         allowNull: false
       },
-      imageUrl: Sequelize.STRING,
+      userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -35,9 +32,13 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
+    }, {
+      engine: "InnoDB",
+      charset: "utf8mb4",
+      collate: "utf8mb4_unicode_520_ci",
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Users');
+    await queryInterface.dropTable('reactions');
   }
 };

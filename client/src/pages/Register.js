@@ -2,26 +2,36 @@ import React, { useState } from 'react'
 import { Row, Col, Form, Button } from 'react-bootstrap'
 import { gql, useMutation } from '@apollo/client'
 import { Link } from 'react-router-dom'
+// import Select from 'react-select';
+// import Select, { Option } from 'rc-select';
+import Select from 'react-dropdown-select';
 
 const REGISTER_USER = gql`
   mutation register(
     $username: String!
     $email: String!
+    $language: String!
     $password: String!
     $confirmPassword: String!
   ) {
     register(
       username: $username
       email: $email
+      language: $language
       password: $password
       confirmPassword: $confirmPassword
     ) {
       username
       email
+      language
       createdAt
     }
   }
 `
+const options = [
+  { value: 'english', label: 'English' },
+  { value: 'portuguese', label: 'Portuguese' }
+];
 
 export default function Register(props) {
   const [variables, setVariables] = useState({
@@ -29,14 +39,19 @@ export default function Register(props) {
     username: '',
     password: '',
     confirmPassword: '',
+    language: 'english'
   })
   const [errors, setErrors] = useState({})
+  // const [checkboxValue, setCheckboxValue] = useState("english")
 
   const [registerUser, { loading }] = useMutation(REGISTER_USER, {
     update: (_, __) => props.history.push('/login'),
     onError: (err) => setErrors(err.graphQLErrors[0].extensions.errors),
   })
-
+  const onChange = (e) => {
+    setVariables({ ...variables, language: e[0].value })
+    // setCheckboxValue(e[0].value)
+  }
   const submitRegisterForm = (e) => {
     e.preventDefault()
 
@@ -73,6 +88,16 @@ export default function Register(props) {
                 setVariables({ ...variables, email: e.target.value })
               }
             />
+          </Form.Group>
+          <Form.Group>
+          <Form.Label className={errors.language && 'text-danger'}>
+              {errors.language ?? 'Language'}
+            </Form.Label>
+            <Select
+                value={variables.language}
+                options={options}
+                onChange={(values) => onChange(values)}
+              />
           </Form.Group>
           <Form.Group>
             <Form.Label className={errors.password && 'text-danger'}>

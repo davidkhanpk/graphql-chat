@@ -2,7 +2,6 @@ const { User, Message } = require('../../models');
 const bcrypt = require('bcryptjs')
 const { UserInputError, AuthenticationError } = require("apollo-server")
 const jwt = require('jsonwebtoken')
-const { JWT_SECRET } = require('../../config/env.json')
 const { Op } = require('sequelize')
 module.exports = {
     Query: {
@@ -10,7 +9,7 @@ module.exports = {
             try {
                 if(!user) throw new AuthenticationError('Unauthenticated');
                 let users = await User.findAll({
-                    attributes: ['username', 'imageUrl', 'createdAt'],
+                    attributes: ['username', 'imageUrl', 'createdAt', "language"],
                     where: {username: { [Op.ne]: user.username}}
                 });
 
@@ -58,11 +57,10 @@ module.exports = {
                 }
                 const token = jwt.sign({
                     username
-                }, JWT_SECRET, { expiresIn: 60 * 60})
+                }, process.env.JWT_SECRET, { expiresIn: 60 * 60})
                 
                 return {
                     ...user.toJSON(),
-                    createdAt: user.createdAt.toISOString(),
                     token
                 }
             } catch(err) {
@@ -72,12 +70,13 @@ module.exports = {
     },
     Mutation: {
         register: async (_, args) => {
-            let { username, email, password, confirmPassword } = args
+            let { username, email, password, confirmPassword, language } = args
             let errors = {}
             try {
                 if(email.trim() == '') errors.email = "Email must not be empty"
                 if(username.trim() == '') errors.username = "Username must not be empty"
                 if(password.trim() == '') errors.password= "Password must not be empty"
+                if(!language) errors.language= "Please select a language"
                 if(confirmPassword.trim() == '') errors.confirmPassword = "Confirm Password must not be empty"
                 if(confirmPassword != password) errors.password = "Password must match"
 
@@ -91,7 +90,7 @@ module.exports = {
                 }
                 password = await  bcrypt.hash(password, 6)
                 const user = await User.create({
-                    username, email, password, 
+                    username, email, password, language
                 })
                 return user;
             } catch(err) {

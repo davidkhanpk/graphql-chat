@@ -2,8 +2,8 @@ import React from 'react';
 import { useAuthState } from '../context/auth';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
-import Messages from '../components/Messages';
-import People from '../components/People';
+import Messages from '../pages/home/Messages';
+import Users from '../pages/home/Users';
 import { Tab, Col, Nav, Row } from 'react-bootstrap';
 export default function Tabs(props) {
     const { user } = useAuthState()
@@ -24,7 +24,7 @@ export default function Tabs(props) {
                 <Col className="p-0">
                     <Tab.Content>
                         <Tab.Pane eventKey="people">
-                            <People />
+                            <Users />
                         </Tab.Pane>
                         <Tab.Pane eventKey="message">
                             <Messages />
