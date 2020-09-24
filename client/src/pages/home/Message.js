@@ -16,6 +16,7 @@ const REACT_TO_MESSAGE = gql`
 `
 
 export default function Message ({message}) {
+    console.log(message.reactions.length)
     const { user } = useAuthState();
     const sent = message.from === user.username
     const received = !sent;
@@ -40,6 +41,7 @@ export default function Message ({message}) {
             show={showPopover}
             onToggle={setShowPopover}
             transition={false}
+            rootClose
             overlay={
                 <Popover className="rounded-pill">
                     <Popover.Content className="d-flex px-0 py-1 align-items-center react-button-popover">
@@ -63,7 +65,7 @@ export default function Message ({message}) {
             'mr-auto': received
         })}>
             {sent && reactButton}
-            <OverlayTrigger transition={false} placement={sent ? 'right' : 'left'} overlay={
+            <OverlayTrigger transition={false} placement="top" overlay={
                 <Tooltip>
                     {moment(message.createdAt).format('MMMM DD, YYYY @ h:mm a')}
                 </Tooltip>
@@ -74,9 +76,9 @@ export default function Message ({message}) {
                     "bg-secondary": received,
                 })}>
                     {
-                        message.reactions.length && (
+                        message.reactions.length > 0 && (
                             <div className="reactions-div bg-secondary p-1 rounded-pill">
-                                {reactionIcons} {message.reactions.length}
+                              {reactionIcons} {message.reactions.length}
                             </div>
                         )
                     }

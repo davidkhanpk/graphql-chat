@@ -36,6 +36,28 @@ body {
   color: rgba(0,0,0,0.5)
 }
 
+@media screen and (max-width: 768px) {
+  .main-container {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .messages-row {
+    flex-grow: 1;
+    height: 95%;
+  }
+  .message-box-parent {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    .messages-box {
+      height: 100%;
+      flex-grow: 1;
+    }
+  }
+}
+
 .info-text { 
    color: rgba(0,0,0, 0.5);
    text-align: center;
@@ -158,4 +180,17 @@ body {
   right: -10px;
   bottom: -10px;
   font-size: 0.7rem;
+}
+
+.user-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.btn-disabled {
+  pointer-events: none;
+  color: gray;
+  opacity: 0.4;
 }

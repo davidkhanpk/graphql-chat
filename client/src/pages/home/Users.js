@@ -41,18 +41,16 @@ export default function Users() {
             const selected = selectedUser === user.username
             return (
                 <div
-                    className={classNames("user-div d-flex p-3", {'bg-white': selected})}
+                    className={classNames("user-div d-flex p-3 justify-content-center justify-content-md-start", {'bg-white': selected})}
                     role="button"
                     key={user.username}
                     onClick={() => disptach({type: 'SET_SELECTED_USER', payload: user.username})}
                 >
                     <Image
                     src={user.imageUrl || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'}
-                    roundedCircle
-                    className="mr-2"
-                    style={{ width: 50, height: 50, objectFit: 'cover' }}
+                    className="user-image"
                     />
-                    <div>
+                    <div className="d-none d-md-block ml-2">
                     <p className="text-success">{user.username}</p>
                     <p className="font-weight-light">
                         {user.latestMessage
@@ -65,7 +63,7 @@ export default function Users() {
         })
     }
     return (
-        <Col xs={4} className="p-0 bg-secondary">
+        <Col xs={2} md={4} className="p-0 bg-secondary">
           {usersMarkup}
         </Col>
     )
