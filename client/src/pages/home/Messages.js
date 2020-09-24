@@ -88,7 +88,7 @@ export default function Messages() {
         selectedChatMarkup = <p className="info-text">You are now connected! Send your first message</p>
       }
     return (
-        <Col xs={8}>
+        <Col xs={10} md={8} className="message-box-parent">
           <div className="messages-box d-flex flex-column-reverse">
             {selectedChatMarkup}
           </div>

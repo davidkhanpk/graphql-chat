@@ -69,17 +69,17 @@ export default function Home({ history }) {
   return (
     <Fragment>
       <Row className="bg-white justify-content-around mb-1">
-        <Link to="/login">
-          <Button variant="link">Login</Button>
+        <Link  to="/login">
+          <Button className={user ? 'btn-disabled' : ''} variant="link">Login</Button>
         </Link>
         <Link to="/register">
-          <Button variant="link">Register</Button>
+          <Button className={user ? 'btn-disabled' : ''} variant="link">Register</Button>
         </Link>
         <Button variant="link" onClick={logout}>
           Logout
         </Button>
       </Row>
-      <Row className="bg-white">
+      <Row className="bg-white messages-row">
         <Users  />
         <Messages />
       </Row>

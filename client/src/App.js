@@ -17,7 +17,7 @@ function App() {
       <AuthProvider>
         <MessageProvider>
         <BrowserRouter>
-        <Container className="">
+        <Container className="main-container">
           <Switch>
             <DynamicRoute path="/" exact component={Home} authenticated/>
             <DynamicRoute path="/login" exact component={Login} guest/>
