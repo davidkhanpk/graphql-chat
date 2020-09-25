@@ -5,13 +5,13 @@ require('dotenv').config()
 // The GraphQL schema
 const typeDefs = require('./graphql/typeDefs');
 const resolvers = require('./graphql/resolvers');
-const contextMiddleware = require('./utils/contextMiddleware')
+// const contextMiddleware = require('./utils/contextMiddleware')
 
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: contextMiddleware,
+  // context: contextMiddleware,
   subscriptions: { path: '/'}
 });
 

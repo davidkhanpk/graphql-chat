@@ -1,7 +1,8 @@
 const { User, Message, Reaction } = require('../../models');
-const { UserInputError, AuthenticationError, withFilter, ForbiddenError } = require("apollo-server")
+const { UserInputError, AuthenticationError, withFilter, ForbiddenError, PubSub } = require("apollo-server")
 const { Op } = require('sequelize')
 const translate = require('@vitalets/google-translate-api');
+const pubsub = new PubSub();
 
 module.exports = {
     Query: {
@@ -107,33 +108,39 @@ module.exports = {
     },
     Subscription: {
         newMessage: {
-            subscribe: withFilter((_, __, {user, pubsub}) => {
-                if(!user) throw new AuthenticationError('Unauthenticated')
-                return pubsub.asyncIterator(['NEW_MESSAGE'])
-            }, ({ newMessage}, _, { user }) => {
-                // console.log(newMessage);
-                // console.log(user);
-                if(newMessage.from === user.username || newMessage.to === user.username) {
-                    console.log("returning true");
-                    return true
-                }
-                return false
-            })
+            subscribe: () => pubsub.asyncIterator(['NEW_MESSAGE'])
         },
         newReaction: {
-            subscribe: withFilter((_, __, {user, pubsub}) => {
-                if(!user) throw new AuthenticationError('Unauthenticated')
-                return pubsub.asyncIterator('NEW_REACTION')
-            }, async ({ newReaction }, _, { user }) => {
-                // console.log(newMessage);
-                // console.log(user);
-                const message = await newReaction.getMessage()
-                if(message.from === user.username || message.to === user.username) {
-                    console.log("returning true");
-                    return true
-                }
-                return false
-            })
-        }
+            subscribe: () => pubsub.asyncIterator(['NEW_REACTION'])
+        },
+        // newMessage: {
+        //     subscribe: withFilter((_, __, {user, pubsub}) => {
+        //         if(!user) throw new AuthenticationError('Unauthenticated')
+        //         return pubsub.asyncIterator(['NEW_MESSAGE'])
+        //     }, ({ newMessage}, _, { user }) => {
+        //         // console.log(newMessage);
+        //         // console.log(user);
+        //         if(newMessage.from === user.username || newMessage.to === user.username) {
+        //             console.log("returning true");
+        //             return true
+        //         }
+        //         return false
+        //     })
+        // },
+        // newReaction: {
+        //     subscribe: withFilter((_, __, {user, pubsub}) => {
+        //         if(!user) throw new AuthenticationError('Unauthenticated')
+        //         return pubsub.asyncIterator('NEW_REACTION')
+        //     }, async ({ newReaction }, _, { user }) => {
+        //         // console.log(newMessage);
+        //         // console.log(user);
+        //         const message = await newReaction.getMessage()
+        //         if(message.from === user.username || message.to === user.username) {
+        //             console.log("returning true");
+        //             return true
+        //         }
+        //         return false
+        //     })
+        // }
     }
 }
