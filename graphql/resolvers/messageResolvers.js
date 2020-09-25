@@ -1,7 +1,8 @@
 const { User, Message, Reaction } = require('../../models');
-const { UserInputError, AuthenticationError, withFilter, ForbiddenError, PubSub } = require("apollo-server")
+const { UserInputError, AuthenticationError, withFilter, ForbiddenError } = require("apollo-server")
 const { Op } = require('sequelize')
 const translate = require('@vitalets/google-translate-api');
+const { PubSub } =  require('graphql-subscriptions');
 const pubsub = new PubSub();
 
 module.exports = {
@@ -109,6 +110,7 @@ module.exports = {
     Subscription: {
         newMessage: {
             subscribe: () => {
+                console.log(pubsub)
                 let it =pubsub.asyncIterator(['NEW_MESSAGE'])
                 return it
             }
