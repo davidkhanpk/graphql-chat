@@ -41,7 +41,7 @@ module.exports = {
         }
     },
     Mutation: {
-        sendMessage: async (parent, {to, content}, { user, pubsub }) => {
+        sendMessage: async (parent, {to, content}, { user }) => {
             try {
                 if(!user) throw new AuthenticationError('Unauthenticated');
                 const recipient = await User.findOne({where: {username: to }})
@@ -65,7 +65,7 @@ module.exports = {
                 throw err
             }
         },
-        reactToMessage: async (_, { uuid, content }, { user, pubsub }) => {
+        reactToMessage: async (_, { uuid, content }, { user }) => {
             const reactions = ['❤️', '😆', '😯', '😢', '😡', '👍', '👎']
             try {
                 if(!reactions.includes(content)) {
@@ -97,7 +97,7 @@ module.exports = {
                         content
                     })
                     console.log(reaction)
-                    // pubsub.publish('NEW_REACTION', { newReaction: reaction})
+                    pubsub.publish('NEW_REACTION', { newReaction: reaction})
                 }
                 return reaction
             } catch(err) {
