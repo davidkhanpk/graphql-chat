@@ -2,7 +2,7 @@ const { User, Message, Reaction } = require('../../models');
 const { UserInputError, AuthenticationError, withFilter, ForbiddenError } = require("apollo-server")
 const { Op } = require('sequelize')
 const translate = require('@vitalets/google-translate-api');
-const { PubSub } =  require('graphql-subscriptions');
+const { PubSub } = require('graphql-subscriptions');
 const pubsub = new PubSub();
 
 module.exports = {
