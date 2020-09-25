@@ -108,10 +108,17 @@ module.exports = {
     },
     Subscription: {
         newMessage: {
-            subscribe: () => pubsub.asyncIterator(['NEW_MESSAGE'])
+            subscribe: () => {
+                let it =pubsub.asyncIterator(['NEW_MESSAGE'])
+                return it
+            }
         },
+        
         newReaction: {
-            subscribe: () => pubsub.asyncIterator(['NEW_REACTION'])
+            subscribe: () => {
+                let iti = pubsub.asyncIterator(['NEW_REACTION'])
+                return iti
+            }
         },
         // newMessage: {
         //     subscribe: withFilter((_, __, {user, pubsub}) => {
