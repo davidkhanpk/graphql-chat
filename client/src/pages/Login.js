@@ -41,6 +41,7 @@ export default function Register(props) {
   return (
     <Row className="bg-white py-5 justify-content-center form-main-div">
       <Col sm={8} md={6} lg={4}>
+        <p class="main-logo text-primary">jessillaine</p>
         <h1 className="text-center">Login</h1>
         <Form className="login-form" onSubmit={submitLoginForm}>
           <Form.Group>
